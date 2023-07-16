@@ -2,12 +2,27 @@
 using iTextSharp.text.pdf;
 using System;
 using System.IO;
-using System.Text.RegularExpressions; 
+using System.Text.RegularExpressions;
 namespace MergePDF
 {
     class Program
     {
         static void Main(string[] args)
+        {
+            mergePdf();
+        }
+        static int GetPageCount(string file)
+        {
+            using (StreamReader sr = new StreamReader(File.OpenRead(file)))
+            {
+                Regex regex = new Regex(@"/Type\s*/Page[^s]");
+                MatchCollection matches = regex.Matches(sr.ReadToEnd());
+
+                return matches.Count;
+            }
+        }
+
+        static void mergePdf()
         {
 
             try
@@ -27,7 +42,7 @@ namespace MergePDF
                 Document sourceDocument = null;
                 PdfCopy pdfCopyProvider = null;
                 PdfImportedPage importedPage;
-               //string outputPdfPath =  @"D:/OWN/MergePDF/MergePDF/Cc.pdf"; 
+                //string outputPdfPath =  @"D:/OWN/MergePDF/MergePDF/Cc.pdf"; 
 
                 sourceDocument = new Document();
                 pdfCopyProvider = new PdfCopy(sourceDocument, new System.IO.FileStream(outputPdfPath, System.IO.FileMode.Create));
@@ -55,30 +70,31 @@ namespace MergePDF
                     //At the end save the output file
                     sourceDocument.Close();
                     Console.WriteLine("Find merged file on below path");
-                    Console.WriteLine(outputPdfPath);                    
+                    Console.WriteLine(outputPdfPath);
+
+                    Console.WriteLine("If you want to Merge more file enter continue or con");
+                    string next = Console.ReadLine();
+
+                    if (next == "continue" || next == "con")
+                    {
+                        Console.Clear();
+                        mergePdf();
+                    } 
+
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message); 
+                    Console.WriteLine(ex.Message);
                 }
 
 
             }
             catch (Exception ex)
             {
-                 
-            }
-          ;
-        }
-        static int GetPageCount(string file)
-        {
-            using (StreamReader sr = new StreamReader(File.OpenRead(file)))
-            {
-                Regex regex = new Regex(@"/Type\s*/Page[^s]");
-                MatchCollection matches = regex.Matches(sr.ReadToEnd());
 
-                return matches.Count;
             }
         }
+
+
     }
 }
